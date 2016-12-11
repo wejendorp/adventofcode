@@ -1,13 +1,15 @@
+const parseLine = line => ({
+	checksum: line.slice(-6, -1),
+	chars: line.slice(0, -7)
+		.replace(/-/g, '')
+		.match(/[a-z]+/g)[0]
+		.split(''),
+	sector: parseInt(line.match(/\d+/g)[0], 10)
+});
+
 const compute = s => {
 	return s.split('\n')
-		.map(line => ({
-			checksum: line.slice(-6, -1),
-			chars: line.slice(0, -7)
-				.replace(/-/g, '')
-				.match(/[a-z]+/g)[0]
-				.split(''),
-			sector: parseInt(line.match(/\d+/g)[0], 10)
-		}))
+		.map(parseLine)
 		.filter(room => {
 			// CountingSet
 			const counts = room.chars.reduce((agg, c) => {
@@ -36,10 +38,27 @@ const compute = s => {
 		.reduce((sum, room) => sum + room.sector, 0);
 };
 
+const decrypt = s => {
+	return s.split('\n')
+		.map(parseLine)
+		.map(line => [
+			line.chars
+				.map(c => c.charCodeAt(0) - 97)
+				.map(c => (c + line.sector) % 26)
+				.map(c => c + 97),
+			line.sector
+		])
+		.map(pair => [
+			String.fromCharCode.apply(null, pair[0]),
+			pair[1]
+		]);
+};
+
 process.stdin.setEncoding('utf8');
 process.stdin.on('readable', () => {
 	var s = process.stdin.read();
 	if (s) {
+		console.log(decrypt(s));
 		console.log(compute(s));
 	}
 });
