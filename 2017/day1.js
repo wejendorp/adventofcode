@@ -20,9 +20,18 @@ For example:
 1234 produces 0 because no digit matches the next.
 91212129 produces 9 because the only digit that matches the next one is the last digit, 9.
 What is the solution to your captcha?
+*/
 
-Your puzzle answer was 1393.
+const compute = s =>
+	s
+		.trim()
+		.split('')
+		.filter((x, i, arr) => {
+			return x === arr[(i + 1) % arr.length];
+		})
+		.reduce((a, b) => a + parseInt(b, 10), 0);
 
+/*
 --- Part Two ---
 
 You notice a progress bar that jumps to 50% completion. Apparently, the door isn't yet satisfied, but it did emit a star as encouragement. The instructions change:
@@ -38,16 +47,6 @@ For example:
 12131415 produces 4.
 What is the solution to your new captcha?
 */
-
-const compute = s =>
-	s
-		.trim()
-		.split('')
-		.filter((x, i, arr) => {
-			return x === arr[(i + 1) % arr.length];
-		})
-		.reduce((a, b) => a + parseInt(b, 10), 0);
-
 const compute2 = s =>
 	s
 		.trim()
